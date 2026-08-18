@@ -28,14 +28,13 @@ Oil paint color mixing app — tell it which paints you own, give it a target co
 ## What Happened
 
 - 2026-08-17: Brainstormed and approved design. Named the project **Chromaforge**. Scaffolded Vite + React 19 + TypeScript + Tailwind v4 + HeroUI v3 project. Set up routing (Match/Collection/History), Supabase-backed AuthContext with `VITE_AUTH_BYPASS` support (matching RiffNotes pattern), ProtectedRoute gate. Verified dev server renders and routes correctly in browser. Initialized local git repo.
-- 2026-08-18: Researched mixing engine approach — discovered we don't need proprietary spectral pigment datasets; Scott Burns' RGB-to-reflectance reconstruction (used by Spectral.js/Mixbox) lets us derive K-M spectra from published masstone hex + tinting strength/opacity, which brands do publish. Compiled a starter 18-pigment reference set (CI codes sourced from Gamblin's conservation-colors chart; hex/tinting-strength values marked `approx`, need verification against real swatches) at `src/engine/pigments.md`. Added Bob Ross (Martin/F. Weber) as a 5th brand alongside W&N/Gamblin/Michael Harding/Rembrandt per Mark's request.
+- 2026-08-18: Researched mixing engine approach. Compiled a starter 18-pigment reference set (CI codes sourced from Gamblin's conservation-colors chart; hex/tinting-strength values marked `approx`, need verification against real swatches) at `src/engine/pigments.md`. Added Bob Ross (Martin/F. Weber) as a 5th brand alongside W&N/Gamblin/Michael Harding/Rembrandt per Mark's request. Wrote DB schema + starter seed migrations (`supabase/migrations/`) — not yet applied to remote, blocked on pooler connection string. Implemented the Kubelka-Munk mixing engine (`src/engine/`): color space conversions + CIEDE2000 (`color.ts`), per-channel K-M pigment mixing (`kubelkaMunk.ts` — v1 uses a 3-channel RGB-band simplification rather than full spectral reconstruction; documented as a known limitation with a future upgrade path), and a ratio solver that ranks candidate recipes (`solver.ts`). 13 Vitest unit tests passing, covering self-mix identity, white-lightening, blue+yellow→green (subtractive, not gray), ranking order, max-paint cap, and no-match detection.
 
 ## Outstanding / Next Steps
 
+- [ ] Apply DB migrations to remote Supabase project — blocked on getting the **transaction pooler** connection string from Mark (direct DB host is IPv6-only, doesn't resolve on this network); migration SQL is written and ready in `supabase/migrations/`
 - [ ] Configure Google OAuth (Google Cloud Console + Supabase dashboard) — Supabase project itself is set up, OAuth provider config still pending
-- [ ] Finish pigment K/S reference data research (starter 18 done, see `src/engine/pigments.md`; hex/tinting-strength values need verification against real swatches, brand cross-referencing not started)
-- [ ] Build database schema + seed migrations (`pigments`, `brand_paints`, `user_collection`, `matches`)
-- [ ] Implement Kubelka-Munk mixing engine + solver (Vitest unit tests)
+- [ ] Verify starter pigment hex/tinting-strength values against real brand swatches (currently `approx`), cross-reference CI codes into `brand_paints` for W&N/Michael Harding/Rembrandt/Bob Ross (Gamblin done)
 - [ ] Build out Collection page (currently a stub)
 - [ ] Build out Match page (currently a stub)
 - [ ] Build out History page (currently a stub)

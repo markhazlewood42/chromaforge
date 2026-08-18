@@ -12,7 +12,9 @@ Paint mixing is subtractive (pigments absorb/scatter light), not additive like l
 
 ### Where the spectral data comes from
 
-We don't have (or need) measured spectral reflectance curves per pigment — brands don't publish those. Instead, each paint's reflectance spectrum is *reconstructed* from its published masstone RGB/hex using Scott Burns' reflectance-recovery approach (the same technique underlying open-source tools like Spectral.js and Mixbox): given only an sRGB triplet, generate a smooth, physically plausible reflectance curve consistent with that color, then do K-M mixing math on the reconstructed spectra. Tinting strength and opacity (also brand-published) scale each pigment's effective K/S weight in a mix. This means seed data only needs: Colour Index code, masstone hex, tinting strength, opacity — all things manufacturers actually publish.
+We don't have (or need) measured spectral reflectance curves per pigment — brands don't publish those. **v1 implementation** (`src/engine/kubelkaMunk.ts`) applies Kubelka-Munk mixing per RGB channel — treating R, G, and B as three independent broadband "reflectance" samples and running the K/S mixing math on each. This is a recognized simplification of full-spectrum K-M and is genuinely subtractive/non-linear (captures blue+yellow→green correctly, unlike linear RGB blending), but it is not colorimetrically exact.
+
+**Documented future upgrade:** full multi-wavelength spectral reconstruction from RGB, e.g. Scott Burns' reflectance-recovery approach (the technique behind Spectral.js/Mixbox) or the classic Smits (1999) basis-spectra method — would replace the 3-channel approximation with proper per-wavelength mixing for better accuracy. Not implemented yet; tracked as a known limitation, not silently assumed to already be spectral. This means seed data only needs: Colour Index code, masstone hex, tinting strength, opacity — all things manufacturers actually publish.
 
 ## Stack
 

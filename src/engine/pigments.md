@@ -2,7 +2,7 @@
 
 ## Method
 
-Each pigment's mixing behavior is derived, not measured: given a paint's published masstone RGB, we reconstruct a plausible reflectance spectrum using Scott Burns' reflectance-recovery approach (see `CLAUDE.md` — same technique behind Spectral.js/Mixbox), then run Kubelka-Munk mixing on the reconstructed spectra. Tinting strength and opacity scale each pigment's effective K/S weight.
+Each pigment's mixing behavior is derived, not measured. **v1** applies Kubelka-Munk mixing per RGB channel directly from each paint's published masstone RGB (see `src/engine/kubelkaMunk.ts` and the note in `CLAUDE.md`) — a documented simplification of full-spectrum K-M, not full spectral reconstruction. Tinting strength and opacity scale each pigment's effective weight in a mix. Full spectral reconstruction (Burns/Smits-style, as used by Spectral.js/Mixbox) is a tracked future upgrade, not yet built.
 
 So the only facts a seed pigment needs — all things brands actually publish — are:
 - **Colour Index (CI) code** — e.g. `PB29` — printed on the tube, identifies the actual pigment regardless of brand's marketing name

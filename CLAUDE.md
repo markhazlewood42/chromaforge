@@ -53,10 +53,16 @@ Two env vars required (see `.env.example`):
 ## Commands
 
 ```bash
-npm run dev      # Start dev server (localhost:3003)
-npm run build    # Production build
-npm run lint     # oxlint
+npm run dev       # Start dev server (localhost:3003)
+npm run build     # Production build
+npm run lint      # oxlint
+npm run test      # Vitest (mixing engine unit tests)
+npm run test:e2e  # Playwright (Chromium + Firefox)
 ```
+
+### Key gotcha: HeroUI Checkbox and Playwright
+
+Don't click `Checkbox.Control` (or the checkbox role locator) directly in Playwright tests — its animated checkmark SVG intercepts the click point and causes flaky/hanging clicks in both Chromium and Firefox. Click the wrapping `<label>` (`Checkbox.Content`) instead, e.g. `page.locator('label').filter({ hasText: 'Paint Name' }).click()`. See `e2e/core-flow.spec.ts`.
 
 ## What's next
 

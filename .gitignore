@@ -30,3 +30,6 @@ supabase-info.md
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+.env*

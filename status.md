@@ -4,13 +4,14 @@ Oil paint color mixing app — tell it which paints you own, give it a target co
 
 ## Current Status
 
-**Phase:** Core flow working end-to-end locally (localStorage-backed); DB wiring pending
+**Phase:** Deployed and live (localStorage-backed data); DB wiring still pending
 **Last updated:** 2026-08-18
 
 ## Deployment
 
-- **Live URL:** not yet deployed
-- **Hosting:** Vercel (planned, Hobby tier)
+- **Live URL:** https://chromaforge-vert.vercel.app — verified live, redirects unauthenticated users to /login correctly, zero console errors, SPA routing works
+- **Hosting:** Vercel (Hobby tier), project `markhazlewood42s-projects/chromaforge`, GitHub-connected for auto-deploy on push
+- **Env vars set on Vercel:** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (all environments)
 - **Repo:** github.com/markhazlewood42/chromaforge (public) — pushed, `main` branch
 - **Backend:** Supabase project created (`odrwbfthdecfgrivykwj`), publishable key wired into `.env.local`, connection verified locally (no console errors, `/login` redirect confirmed working)
 
@@ -28,6 +29,7 @@ Oil paint color mixing app — tell it which paints you own, give it a target co
 ## What Happened
 
 - 2026-08-17: Brainstormed and approved design. Named the project **Chromaforge**. Scaffolded Vite + React 19 + TypeScript + Tailwind v4 + HeroUI v3 project. Set up routing (Match/Collection/History), Supabase-backed AuthContext with `VITE_AUTH_BYPASS` support (matching RiffNotes pattern), ProtectedRoute gate. Verified dev server renders and routes correctly in browser. Initialized local git repo.
+- 2026-08-18: Deployed to Vercel. Linked project (GitHub-connected), set `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` on all environments, first deploy auto-promoted to production by Vercel. Verified live at chromaforge-vert.vercel.app.
 - 2026-08-18: Added Playwright E2E suite (`e2e/core-flow.spec.ts`) covering Collection selection, the empty-collection error state, the full find-mix-and-save flow, and history removal — 8 tests passing across Chromium + Firefox. Note: click the wrapping `<label>` (`Checkbox.Content`), not the checkbox control directly — its animated checkmark SVG intercepts direct clicks and causes flaky/failing tests.
 - 2026-08-18: Researched mixing engine approach. Compiled a starter 18-pigment reference set (CI codes sourced from Gamblin's conservation-colors chart; hex/tinting-strength values marked `approx`, need verification against real swatches) at `src/engine/pigments.md`. Added Bob Ross (Martin/F. Weber) as a 5th brand alongside W&N/Gamblin/Michael Harding/Rembrandt per Mark's request. Wrote DB schema + starter seed migrations (`supabase/migrations/`) — not yet applied to remote, blocked on pooler connection string. Implemented the Kubelka-Munk mixing engine (`src/engine/`): color space conversions + CIEDE2000 (`color.ts`), per-channel K-M pigment mixing (`kubelkaMunk.ts` — v1 uses a 3-channel RGB-band simplification rather than full spectral reconstruction; documented as a known limitation with a future upgrade path), and a ratio solver that ranks candidate recipes (`solver.ts`). 13 Vitest unit tests passing, covering self-mix identity, white-lightening, blue+yellow→green (subtractive, not gray), ranking order, max-paint cap, and no-match detection. Created public GitHub repo and pushed. Built out Collection (checkbox catalog grouped by category), Match (HeroUI ColorPicker + hex, image upload with click-to-sample eyedropper, ranked recipe cards, save-to-history), and History pages — all currently backed by localStorage (`useLocalCollection`/`useLocalHistory`) as an interim store until Supabase migrations are applied and `user_collection`/`matches` are wired up. Verified the full Collection → Match → History flow live in browser: correct ranking, correct "no close match" labeling, save/remove working, zero console errors.
 
@@ -37,6 +39,7 @@ Oil paint color mixing app — tell it which paints you own, give it a target co
 - [ ] Configure Google OAuth (Google Cloud Console + Supabase dashboard) — Supabase project itself is set up, OAuth provider config still pending
 - [ ] Verify starter pigment hex/tinting-strength values against real brand swatches (currently `approx`), cross-reference CI codes into `brand_paints` for W&N/Michael Harding/Rembrandt/Bob Ross (Gamblin done)
 - [ ] Swap `useLocalCollection`/`useLocalHistory` (localStorage) for Supabase-backed hooks against `user_collection`/`matches` once migrations are applied
+- [ ] Deployed app currently has `VITE_AUTH_BYPASS` unset (real auth required) — Google OAuth isn't configured yet, so no one can actually sign in on production until that's done (see OAuth item above)
 - [ ] Create GitHub repo (public) and push
 - [ ] Deploy to Vercel
 

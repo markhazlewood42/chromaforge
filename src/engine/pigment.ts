@@ -4,6 +4,7 @@ export type TintingStrength = 'low' | 'medium' | 'high' | 'very high'
 export type Pigment = {
   ciCode: string
   commonName: string
+  category: string
   masstoneHex: string
   opacity: Opacity
   tintingStrength: TintingStrength

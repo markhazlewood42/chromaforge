@@ -4,14 +4,14 @@ Oil paint color mixing app — tell it which paints you own, give it a target co
 
 ## Current Status
 
-**Phase:** Scaffolding
-**Last updated:** 2026-08-17
+**Phase:** Core flow working end-to-end locally (localStorage-backed); DB wiring pending
+**Last updated:** 2026-08-18
 
 ## Deployment
 
 - **Live URL:** not yet deployed
 - **Hosting:** Vercel (planned, Hobby tier)
-- **Repo:** github.com/markhazlewood42/chromaforge (public) — local git initialized, not yet pushed
+- **Repo:** github.com/markhazlewood42/chromaforge (public) — pushed, `main` branch
 - **Backend:** Supabase project created (`odrwbfthdecfgrivykwj`), publishable key wired into `.env.local`, connection verified locally (no console errors, `/login` redirect confirmed working)
 
 ## Key Decisions
@@ -28,16 +28,14 @@ Oil paint color mixing app — tell it which paints you own, give it a target co
 ## What Happened
 
 - 2026-08-17: Brainstormed and approved design. Named the project **Chromaforge**. Scaffolded Vite + React 19 + TypeScript + Tailwind v4 + HeroUI v3 project. Set up routing (Match/Collection/History), Supabase-backed AuthContext with `VITE_AUTH_BYPASS` support (matching RiffNotes pattern), ProtectedRoute gate. Verified dev server renders and routes correctly in browser. Initialized local git repo.
-- 2026-08-18: Researched mixing engine approach. Compiled a starter 18-pigment reference set (CI codes sourced from Gamblin's conservation-colors chart; hex/tinting-strength values marked `approx`, need verification against real swatches) at `src/engine/pigments.md`. Added Bob Ross (Martin/F. Weber) as a 5th brand alongside W&N/Gamblin/Michael Harding/Rembrandt per Mark's request. Wrote DB schema + starter seed migrations (`supabase/migrations/`) — not yet applied to remote, blocked on pooler connection string. Implemented the Kubelka-Munk mixing engine (`src/engine/`): color space conversions + CIEDE2000 (`color.ts`), per-channel K-M pigment mixing (`kubelkaMunk.ts` — v1 uses a 3-channel RGB-band simplification rather than full spectral reconstruction; documented as a known limitation with a future upgrade path), and a ratio solver that ranks candidate recipes (`solver.ts`). 13 Vitest unit tests passing, covering self-mix identity, white-lightening, blue+yellow→green (subtractive, not gray), ranking order, max-paint cap, and no-match detection.
+- 2026-08-18: Researched mixing engine approach. Compiled a starter 18-pigment reference set (CI codes sourced from Gamblin's conservation-colors chart; hex/tinting-strength values marked `approx`, need verification against real swatches) at `src/engine/pigments.md`. Added Bob Ross (Martin/F. Weber) as a 5th brand alongside W&N/Gamblin/Michael Harding/Rembrandt per Mark's request. Wrote DB schema + starter seed migrations (`supabase/migrations/`) — not yet applied to remote, blocked on pooler connection string. Implemented the Kubelka-Munk mixing engine (`src/engine/`): color space conversions + CIEDE2000 (`color.ts`), per-channel K-M pigment mixing (`kubelkaMunk.ts` — v1 uses a 3-channel RGB-band simplification rather than full spectral reconstruction; documented as a known limitation with a future upgrade path), and a ratio solver that ranks candidate recipes (`solver.ts`). 13 Vitest unit tests passing, covering self-mix identity, white-lightening, blue+yellow→green (subtractive, not gray), ranking order, max-paint cap, and no-match detection. Created public GitHub repo and pushed. Built out Collection (checkbox catalog grouped by category), Match (HeroUI ColorPicker + hex, image upload with click-to-sample eyedropper, ranked recipe cards, save-to-history), and History pages — all currently backed by localStorage (`useLocalCollection`/`useLocalHistory`) as an interim store until Supabase migrations are applied and `user_collection`/`matches` are wired up. Verified the full Collection → Match → History flow live in browser: correct ranking, correct "no close match" labeling, save/remove working, zero console errors.
 
 ## Outstanding / Next Steps
 
 - [ ] Apply DB migrations to remote Supabase project — blocked on getting the **transaction pooler** connection string from Mark (direct DB host is IPv6-only, doesn't resolve on this network); migration SQL is written and ready in `supabase/migrations/`
 - [ ] Configure Google OAuth (Google Cloud Console + Supabase dashboard) — Supabase project itself is set up, OAuth provider config still pending
 - [ ] Verify starter pigment hex/tinting-strength values against real brand swatches (currently `approx`), cross-reference CI codes into `brand_paints` for W&N/Michael Harding/Rembrandt/Bob Ross (Gamblin done)
-- [ ] Build out Collection page (currently a stub)
-- [ ] Build out Match page (currently a stub)
-- [ ] Build out History page (currently a stub)
+- [ ] Swap `useLocalCollection`/`useLocalHistory` (localStorage) for Supabase-backed hooks against `user_collection`/`matches` once migrations are applied
 - [ ] Playwright E2E tests
 - [ ] Create GitHub repo (public) and push
 - [ ] Deploy to Vercel
@@ -64,12 +62,25 @@ src/
     GlobalNav.tsx            — top nav (Match/Collection/History)
   pages/
     LoginPage.tsx
-    MatchPage.tsx            — stub, target color input + solver results (TODO)
-    CollectionPage.tsx       — stub, owned paints management (TODO)
-    HistoryPage.tsx          — stub, saved matches (TODO)
+    MatchPage.tsx            — target color (picker/hex/image eyedropper), solver results, save-to-history
+    CollectionPage.tsx       — checkbox catalog grouped by pigment category
+    HistoryPage.tsx          — saved matches, remove
+  hooks/
+    useLocalCollection.ts     — interim localStorage owned-paints store (TODO: swap for Supabase)
+    useLocalHistory.ts        — interim localStorage match history (TODO: swap for Supabase)
+  data/
+    catalog.ts                — local mirror of the seeded pigment catalog (TODO: fetch from Supabase)
   lib/
     supabase.ts              — Supabase client init
   types/
     database.ts               — placeholder, replace with generated types once schema exists
-  engine/                     — Kubelka-Munk mixing engine (TODO, empty)
+  engine/
+    color.ts                  — sRGB/linear/XYZ/LAB conversions, CIEDE2000
+    kubelkaMunk.ts             — per-channel K-M pigment mixing (v1 simplification, see CLAUDE.md)
+    pigment.ts                 — Pigment/OwnedPaint types, tinting-strength weighting
+    solver.ts                  — ranks candidate recipes by ΔE2000
+    pigments.md                 — pigment data sourcing notes
+    __tests__/                  — 13 Vitest unit tests, all passing
+supabase/
+  migrations/                — schema + seed pigments (written, not yet applied to remote)
 ```

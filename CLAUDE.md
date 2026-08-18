@@ -10,6 +10,10 @@ This is a personal project (not a HubSpot repo). Use standard npm commands.
 
 Paint mixing is subtractive (pigments absorb/scatter light), not additive like light or naive RGB averaging. Two paints with near-identical RGB swatches can mix completely differently depending on their actual pigment composition. The mixing engine (`src/engine/`) works in K/S (absorption/scattering) space per pigment, converting to/from LAB for comparison against targets (ΔE2000). See the pigment reference data model below — this is the load-bearing design decision for the whole app.
 
+### Where the spectral data comes from
+
+We don't have (or need) measured spectral reflectance curves per pigment — brands don't publish those. Instead, each paint's reflectance spectrum is *reconstructed* from its published masstone RGB/hex using Scott Burns' reflectance-recovery approach (the same technique underlying open-source tools like Spectral.js and Mixbox): given only an sRGB triplet, generate a smooth, physically plausible reflectance curve consistent with that color, then do K-M mixing math on the reconstructed spectra. Tinting strength and opacity (also brand-published) scale each pigment's effective K/S weight in a mix. This means seed data only needs: Colour Index code, masstone hex, tinting strength, opacity — all things manufacturers actually publish.
+
 ## Stack
 
 - **Vite + React 19 + TypeScript**

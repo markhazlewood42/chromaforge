@@ -39,7 +39,7 @@ Oil paint color mixing app — tell it which paints you own, give it a target co
 - [ ] Configure Google OAuth (Google Cloud Console + Supabase dashboard) — Supabase project itself is set up, OAuth provider config still pending
 - [ ] Verify starter pigment hex/tinting-strength values against real brand swatches (currently `approx`), cross-reference CI codes into `brand_paints` for W&N/Michael Harding/Rembrandt/Bob Ross (Gamblin done)
 - [ ] Swap `useLocalCollection`/`useLocalHistory` (localStorage) for Supabase-backed hooks against `user_collection`/`matches` once migrations are applied
-- [ ] Deployed app currently has `VITE_AUTH_BYPASS` unset (real auth required) — Google OAuth isn't configured yet, so no one can actually sign in on production until that's done (see OAuth item above)
+- [ ] **`VITE_AUTH_BYPASS=true` is currently set on the production Vercel deployment** so Mark can test without Google OAuth being configured yet — this skips real auth entirely (fake user, no Supabase session). Turn this off (`vercel env rm VITE_AUTH_BYPASS production preview` + redeploy) once Google OAuth is set up, before treating the deployment as auth-protected.
 - [ ] Create GitHub repo (public) and push
 - [ ] Deploy to Vercel
 

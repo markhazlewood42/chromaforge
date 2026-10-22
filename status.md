@@ -1,3 +1,13 @@
+---
+type: status
+title: ChromaForge — Project Status
+project: chromaforge
+created: 2026-03-01
+updated: 2026-08-26
+tags: [status]
+memory: [project-chromaforge]
+---
+
 # Chromaforge
 
 Oil paint color mixing app — tell it which paints you own, give it a target color (picker, hex, or sampled from a photo), and it recommends what to mix and in what ratio using a Kubelka-Munk pigment model.
@@ -93,3 +103,7 @@ supabase/
 e2e/
   core-flow.spec.ts           — Playwright E2E, 8 tests passing
 ```
+
+## 2026-10-22: superseded by Wet Canvas
+
+Wet Canvas (`projects/wet-canvas/`, github.com/markhazlewood42/wet-canvas) replaces this app: spectral two-constant Kubelka-Munk, 63 pigments, mixing well, chart, matcher, gamut, pigment canvas. Chromaforge stays deployed but gets no further work unless Mark says otherwise.

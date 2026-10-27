@@ -1,3 +1,13 @@
+---
+type: topic
+title: Pigment Data and Kubelka-Munk Model
+project: chromaforge
+created: 2026-03-01
+updated: 2026-08-26
+tags: [color, kubelka-munk, pigments]
+memory: [project-chromaforge]
+---
+
 # Pigment Reference Data — Research Notes
 
 ## Method
